@@ -16,6 +16,8 @@ English | [中文](README.md)
 ## 📝 Overview
 This project is a local financial Q&A system based on the **RAG (Retrieval-Augmented Generation)** architecture. Designed for complex table structures and long-text logic in financial reports (e.g., annual reports), it implements a full closed-loop process from unstructured PDF parsing to structured knowledge base retrieval and professional LLM-based Q&A.
 
+![System Demo Interface](assets/demo.png)
+
 ## 🚀 Key Features
 - **Bilingual Dynamic Prompt Routing**: Built-in language detection supporting both Chinese and English queries. The system automatically identifies the language and routes to the corresponding expert prompt template, enabling cross-language financial analysis (e.g., "Analyze Chinese reports in English").
 - **Metadata-based Company Filtering**: Integrated dynamic company selector in the UI. It leverages ChromaDB's metadata filtering mechanism for precise retrieval, effectively avoiding data interference between different financial reports.
@@ -41,8 +43,8 @@ This project is a local financial Q&A system based on the **RAG (Retrieval-Augme
 ### 1. Setup
 ```bash
 # Clone the repository
-git clone https://github.com/Lunaira-Y/Financial-Insight-RAG-.git
-cd Financial-Insight-RAG-
+git clone https://github.com/Lunaira-Y/Financial-Insight-RAG.git
+cd Financial-Insight-RAG
 
 # Install dependencies
 pip install -r requirements.txt
@@ -69,4 +71,5 @@ streamlit run src/app.py
 
 ---
 **Developer**: Lunaira  
-**Contact**: [Your Email/LinkedIn]
+**Acknowledgments**:
+Thanks to the LangChain, Ollama, and Streamlit communities for providing excellent open-source application frameworks. Special thanks to Moka AI for open-sourcing the m3e Chinese embedding model, as well as Chroma and PDFPlumber for their powerful technical support in underlying data processing and vector storage.

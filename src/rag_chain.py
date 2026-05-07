@@ -1,4 +1,10 @@
 import os
+
+# ✨ 关键网络修复：设置 Hugging Face 国内镜像，解决 client closed 报错问题
+os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
+# 如果依然报错，可以取消下面这行的注释来强制完全离线运行
+# os.environ["HF_HUB_OFFLINE"] = "1"
+
 import re
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings

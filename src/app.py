@@ -1,5 +1,11 @@
-import streamlit as st
 import os
+
+# ✨ 关键网络修复：设置 Hugging Face 国内镜像，解决 client closed 报错问题
+os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
+# 如果依然报错，可以取消下面这行的注释来强制完全离线运行
+# os.environ["HF_HUB_OFFLINE"] = "1"
+
+import streamlit as st
 import re
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -96,11 +102,11 @@ with st.sidebar:
     current_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(current_dir)
     data_path = os.path.join(project_root, "data")
-    
+
     pdf_files = []
     if os.path.exists(data_path):
         pdf_files = [f for f in os.listdir(data_path) if f.endswith(".pdf")]
-    
+
     company_options = ["全部公司"] + pdf_files
     selected_company = st.selectbox("选择目标公司进行精准检索", company_options)
 

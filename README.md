@@ -14,6 +14,8 @@
 ## 📝 项目简介
 本项目是一个基于 **RAG (Retrieval-Augmented Generation)** 架构的本地财经问答系统。针对财经报表（如年度报告）中复杂的表格结构和长文本逻辑，实现了从非结构化 PDF 解析到结构化知识库检索，再到大模型专业问答的全流程闭环。
 
+![系统演示界面](assets/demo.png)
+
 ## 🚀 核心技术特性
 - **双语动态 Prompt 路由**：内置语言检测，支持中英双语提问。系统会自动识别语种并路由至对应的专家级 Prompt 模板，实现跨语言的财务分析（如“中文财报，英文回答”）。
 - **基于元数据的公司筛选 (Metadata Filtering)**：UI 集成动态公司选择器，利用 ChromaDB 元数据过滤机制实现精准检索，有效避免多份财报间的数据干扰。
@@ -39,8 +41,8 @@
 ### 1. 环境准备
 ```bash
 # 克隆仓库
-git clone https://github.com/Lunaira-Y/Financial-Insight-RAG-.git
-cd Financial-Insight-RAG-
+git clone https://github.com/Lunaira-Y/Financial-Insight-RAG.git
+cd Financial-Insight-RAG
 
 # 安装依赖
 pip install -r requirements.txt
@@ -67,4 +69,5 @@ streamlit run src/app.py
 
 ---
 **开发者**: Lunaira  
-**联系方式**: [Your Email/LinkedIn]
+**致谢**:
+感谢 LangChain、Ollama 与 Streamlit 社区提供的优秀开源应用框架；特别感谢 Moka AI 开源的 `m3e` 中文向量模型，以及 Chroma 和 PDFPlumber 在底层数据处理与向量存储上提供的强大技术支撑。
