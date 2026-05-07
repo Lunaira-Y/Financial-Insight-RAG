@@ -1,0 +1,10 @@
+streamlit
+langchain
+langchain-community
+langchain-chroma
+langchain-huggingface
+langchain-ollama
+langchain-core
+pdfplumber
+sentence-transformers
+chromadb
