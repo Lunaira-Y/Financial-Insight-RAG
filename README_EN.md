@@ -1,4 +1,10 @@
-# Financial-Insight-RAG: Local Financial Report Intelligent Analysis System
+# Financial-Insight-RAG
+
+<p align="center">
+  <a href="README.md">中文</a> | <b>English</b>
+</p>
+
+---
 
 English | [中文](README.md)
 
@@ -35,8 +41,8 @@ This project is a local financial Q&A system based on the **RAG (Retrieval-Augme
 ### 1. Setup
 ```bash
 # Clone the repository
-git clone https://github.com/Lunaira-Y/Financial-Insight-RAG.git
-cd Financial-Insight-RAG
+git clone https://github.com/Lunaira-Y/Financial-Insight-RAG-.git
+cd Financial-Insight-RAG-
 
 # Install dependencies
 pip install -r requirements.txt
@@ -62,7 +68,5 @@ streamlit run src/app.py
 - `src/vectorize.py`: Vector storage and automatic archiving process.
 
 ---
-**Developer**: Lunaira
-
-**Acknowledgments**:
-We would like to thank the LangChain, Ollama, and Streamlit communities for their outstanding open-source application frameworks. Special appreciation goes to Moka AI for open-sourcing the m3e Chinese vector model, and to Chroma and PDFPlumber for their robust technical support in data processing and vector storage.
+**Developer**: Lunaira  
+**Contact**: [Your Email/LinkedIn]
