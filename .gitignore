@@ -7,6 +7,14 @@ venv/
 env/
 .env
 
+# Node.js
+node_modules/
+.next/
+out/
+build/
+.npm
+package-lock.json
+
 # IDEs
 .idea/
 .vscode/
@@ -14,11 +22,22 @@ env/
 *.swo
 
 # Project specific
-data/*.pdf
+data/*
+!data/.gitkeep
 processed_chunks/
-archive/
+archive/*
+!archive/.gitkeep
 chroma_db/
+flashrank_cache/
+models/m3e-small/
+docx_content/
 
 # OS
 .DS_Store
 Thumbs.db
+
+# Large files
+*.docx
+*.zip
+*.7z
+*.rar

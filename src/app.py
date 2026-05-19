@@ -7,6 +7,7 @@ os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
 
 import streamlit as st
 import re
+from src.retrieval_engine import get_retrieval_engine
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_ollama import ChatOllama
@@ -60,25 +61,35 @@ def load_rag_backend():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(current_dir)
     persist_dir = os.path.join(project_root, "chroma_db")
+    model_path = os.path.join(project_root, "models", "m3e-small")
+
+    # ✨ 优化：优先使用本地模型
+    if os.path.exists(model_path):
+        embedding_model = model_path
+    else:
+        embedding_model = "moka-ai/m3e-small"
 
     embeddings = HuggingFaceEmbeddings(
-        model_name="moka-ai/m3e-small",
+        model_name=embedding_model,
         model_kwargs={'device': 'cpu'},
         encode_kwargs={'normalize_embeddings': True}
     )
 
     if not os.path.exists(persist_dir):
-        return None, None, 0
+        return None, None, None, 0
 
     vectorstore = Chroma(persist_directory=persist_dir, embedding_function=embeddings)
     db_count = vectorstore._collection.count()
 
+    # ✨ 升级：初始化专业检索引擎
+    retrieval_engine = get_retrieval_engine(vectorstore)
+
     llm = ChatOllama(model="qwen2:1.5b", temperature=0)
 
-    return vectorstore, llm, db_count
+    return vectorstore, retrieval_engine, llm, db_count
 
 
-vectorstore, llm, db_count = load_rag_backend()
+vectorstore, retrieval_engine, llm, db_count = load_rag_backend()
 
 # ==========================================
 # 3. 侧边栏设计 (Professional Info)
@@ -94,7 +105,7 @@ with st.sidebar:
 
     st.divider()
     st.subheader("⚙️ 检索参数调节")
-    top_k = st.slider("召回片段数量 (K值)", 1, 10, 3)
+    top_k = st.slider("召回片段数量 (K值)", 1, 10, 5)
 
     st.divider()
     st.subheader("🏢 公司筛选 (Metadata Filter)")
@@ -113,8 +124,8 @@ with st.sidebar:
     st.divider()
     st.info("""
     **开发者**: Lunaira  
-    **阶段**: Stage 5 - 可视化展示  
-    **特性**: 支持动态 Prompt 路由与跨语言财务检索分析。
+    **阶段**: [Professional V2]  
+    **特性**: 支持高保真表格解析、Jieba 增强混合检索。
     """)
 
     if st.button("🧹 清除聊天历史"):
@@ -124,8 +135,8 @@ with st.sidebar:
 # ==========================================
 # 4. 聊天界面逻辑
 # ==========================================
-st.title("🏦 智能双语财报分析助手")
-st.write("基于 RAG 架构的专业财经问答引擎。支持中英双语提问。")
+st.title("🏦 智能双语财报分析助手 [Professional V2]")
+st.write("已启用：高保真表格解析、Jieba 增强混合检索 (Hybrid Search)。")
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -143,18 +154,24 @@ if prompt_input := st.chat_input("输入财报问题 / Ask a financial question.
         if vectorstore is None:
             st.error("❌ 未检测到 ChromaDB 数据库，请确保已运行阶段 3 代码。")
         else:
-            with st.spinner("🔍 正在检索核心切片并分析财报..."):
-                # 构造检索参数
-                search_kwargs = {"k": top_k}
+            with st.spinner("🔍 正在执行专业混合检索并重排序..."):
+                # 构造过滤条件
+                metadata_filter = None
                 if selected_company != "全部公司":
                     target_path = os.path.join(data_path, selected_company)
-                    search_kwargs["filter"] = {"source": target_path}
+                    metadata_filter = {"source": target_path}
 
-                # 定义检索器
-                retriever = vectorstore.as_retriever(search_kwargs=search_kwargs)
-                source_docs = retriever.invoke(prompt_input)
+                # ✨ 调用专业检索引擎
+                source_docs = retrieval_engine.retrieve(
+                    prompt_input, 
+                    top_n=top_k, 
+                    metadata_filter=metadata_filter
+                )
 
-                # ✨ 核心：动态 Prompt 路由
+                # 提取 Context
+                context_text = "\n\n".join([doc.page_content for doc in source_docs])
+
+                # ✨ 核心：动态 Prompt 路由 (保留之前的模板逻辑)
                 if is_english_query(prompt_input):
                     template = """# Role
 You are a Senior CPA and Cross-national Financial Analyst with 10 years of experience.
@@ -165,7 +182,7 @@ The [Context] is in Chinese, but you MUST translate the findings and reply entir
 
 # Rules
 1. **Table Recognition**: Consecutive numbers usually represent year-over-year data. Match them with the correct row/column headers.
-2. **Accuracy & Translation**: Extract the numbers accurately. Translate financial units correctly (e.g., RMB, Yuan).
+2. **Accuracy & Units**: Extract numbers accurately. Pay close attention to units (e.g., RMB Yuan, Thousand, Million, Billion).
 3. **Honesty**: If the answer is not in the context, clearly reply: "Sorry, the provided financial snippets do not contain specific data regarding this query." DO NOT hallucinate.
 
 # Context
@@ -175,7 +192,6 @@ The [Context] is in Chinese, but you MUST translate the findings and reply entir
 {question}
 
 # Output Format (in English):
-Please output in a professional tone. If providing data, use this format:
 - **Metric**:
 - **Value**:
 - **Source Context**: (Briefly explain where you found this in the context)
@@ -187,12 +203,10 @@ Please output in a professional tone. If providing data, use this format:
 # Task
 请仅基于提供的【参考资料】用专业的中文回答用户的问题。如果资料涉及多个年份或多项财务指标，请进行准确对比和说明。
 
-# Data Handling Rules (针对表格文本)
-1. **表格识别**：参考资料中若出现连续的数字，通常代表不同年度的对比数据。请根据行标题和列标题进行精准匹配。
-2. **数值完整性**：提取数值时请保留原始精度，并留意金额单位（如：人民币元、万元）。
-3. **诚实原则**：
-   - 如果参考资料明确包含答案，请直接给出结果。
-   - 如果资料中完全没有提及该信息，请明确回答：“抱歉，当前提供的财报片段中未包含有关该问题的具体数据。”严禁胡乱编造。
+# Rules
+1. **表格识别**：请仔细比对行标题和列标题。连续数字通常代表不同年度（如 2025 vs 2024）。
+2. **数值与单位**：提取数值时请务必留意金额单位（如：人民币元、万元、亿元），并在回答中明确标注。
+3. **诚实原则**：如果参考资料中完全没有提及该信息，请回答：“抱歉，当前提供的财报片段中未包含有关该问题的具体数据。”
 
 # Context (参考资料)
 {context}
@@ -201,7 +215,6 @@ Please output in a professional tone. If providing data, use this format:
 {question}
 
 # Output Format
-请以专业、客观的口吻给出答案。如果是数据回答，请尽量采用以下格式：
 - **指标名称**：
 - **具体数值**：
 - **财报依据**：(简述在资料中看到的上下文)
@@ -209,15 +222,23 @@ Please output in a professional tone. If providing data, use this format:
 
                 prompt_temp = ChatPromptTemplate.from_template(template)
 
+                # ✨ 升级：使用流式输出提升交互感
                 chain = (
-                        {"context": retriever, "question": RunnablePassthrough()}
+                        {"context": lambda x: context_text, "question": RunnablePassthrough()}
                         | prompt_temp
                         | llm
                         | StrOutputParser()
                 )
 
-                full_response = chain.invoke(prompt_input)
-                st.markdown(full_response)
+                response_placeholder = st.empty()
+                full_response = ""
+                
+                # 开始流式迭代
+                for chunk in chain.stream(prompt_input):
+                    full_response += chunk
+                    response_placeholder.markdown(full_response + "▌")
+                
+                response_placeholder.markdown(full_response)
 
                 with st.expander("📚 查看原始检索证据 (Traceability)"):
                     for i, doc in enumerate(source_docs):

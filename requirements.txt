@@ -8,3 +8,9 @@ langchain-core
 pdfplumber
 sentence-transformers
 chromadb
+rank_bm25
+flashrank
+ragas
+datasets
+fastapi
+uvicorn

@@ -1,4 +1,4 @@
-# Financial-Insight-RAG
+# Financial-Insight-RAG (Agentic Enhanced RAG System)
 
 <p align="center">
   <a href="README.md">中文</a> | <b>English</b>
@@ -6,46 +6,63 @@
 
 ---
 
-English | [中文](README.md)
-
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
 [![Framework](https://img.shields.io/badge/Framework-LangChain-green.svg)](https://python.langchain.com/)
 [![VectorDB](https://img.shields.io/badge/VectorDB-Chroma-red.svg)](https://www.trychroma.com/)
 [![LLM](https://img.shields.io/badge/Local_LLM-Qwen2--1.5B-purple.svg)](https://ollama.com/)
+[![Frontend](https://img.shields.io/badge/Frontend-Next.js_14-black.svg)](https://nextjs.org/)
 
-## 📝 Overview
-This project is a local financial Q&A system based on the **RAG (Retrieval-Augmented Generation)** architecture. Designed for complex table structures and long-text logic in financial reports (e.g., annual reports), it implements a full closed-loop process from unstructured PDF parsing to structured knowledge base retrieval and professional LLM-based Q&A.
+## 📝 Introduction
+**Financial-Insight-RAG** is a professional-grade Q&A system designed specifically for complex financial reports (e.g., Annual Reports). Built upon a traditional RAG architecture, this project integrates an **Agentic Thinking Chain**, **Lightweight Knowledge Graph Enhancement**, and **HyDE (Hypothetical Document Embeddings)**. It excels at handling data calculations, entity relationships, and cross-lingual retrieval tasks within financial contexts.
 
-![System Demo Interface](assets/demo.png)
+![System Demo](assets/demo.png)
 
-## 🚀 Key Features
-- **Bilingual Dynamic Prompt Routing**: Built-in language detection supporting both Chinese and English queries. The system automatically identifies the language and routes to the corresponding expert prompt template, enabling cross-language financial analysis (e.g., "Analyze Chinese reports in English").
-- **Metadata-based Company Filtering**: Integrated dynamic company selector in the UI. It leverages ChromaDB's metadata filtering mechanism for precise retrieval, effectively avoiding data interference between different financial reports.
-- **Robust Incremental Pipeline**:
-    - **Incremental Processing**: Automatically identifies parsed files to avoid redundant computation.
-    - **Automatic Archiving**: JSON chunks are moved to the `archive/` directory after indexing, ensuring a clear data flow.
-- **Transparent Traceability UI**: Built with Streamlit, it displays the Top-K original retrieved snippets, source filenames, and page numbers in real-time.
+## 🚀 Key Optimized Features
+
+### 1. Agentic Financial Calculation Engine
+Unlike traditional text matching, the system features a built-in Agent logic. When a user question involves financial calculations (e.g., "Calculate the gross margin for 2024"), the LLM will:
+- **Self-Plan**: Identify the required raw accounting data.
+- **Precise Extraction**: Extract values from retrieved text chunks and normalize units.
+- **Secure Execution**: Automatically generate Python scripts to perform calculations in a sandbox environment, ensuring absolute accuracy.
+
+### 2. Deep Retrieval Enhancement Pipeline
+- **Graph Boost**: Utilizes lightweight graph extraction to identify core financial entities (companies, metrics, percentage changes) in queries, dynamically optimizing retrieval weights.
+- **HyDE (Hypothetical Document Embeddings)**: Generates hypothetical financial report snippets via LLM to bridge the semantic gap between natural language queries and professional financial terminology.
+- **Ensemble Retrieval**: Combines BM25 keyword search with semantic vector search to achieve both precision and deep understanding.
+
+### 3. Modern Full-Stack Architecture
+- **Backend (FastAPI)**: High-performance asynchronous API supporting metadata filtering, incremental processing, and offline model loading.
+- **Frontend (Next.js 14)**: Built with the latest React Server Components architecture, providing a responsive and fluid streaming interaction experience.
+- **Bilingual Routing**: Intelligent recognition of Chinese and English, enabling "cross-lingual analysis" and "expert-level prompt switching."
 
 ## 🛠️ Tech Stack
 - **LLM**: Qwen2-1.5B (via Ollama)
-- **Embedding**: m3e-small (Moka AI)
-- **Framework**: LangChain (LCEL)
+- **Embedding**: m3e-small (Moka AI, fully offline supported)
+- **Frameworks**: LangChain (LCEL), FastAPI
 - **Vector Database**: ChromaDB
-- **Parsing Tool**: PDFPlumber
-- **Frontend**: Streamlit
+- **Tokenization**: Jieba (optimized for Chinese financial vocabulary)
+- **Frontend**: Next.js (Preferred) / Streamlit (Legacy/Alternative)
 
-## 💻 Hardware & Optimization
-- **Edge Deployment**: Supports **CPU inference** across the entire pipeline. It runs smoothly on a standard laptop (16GB RAM).
-- **Optimization**: Specifically designed 4-bit quantization for financial scenarios and explicit CPU mode for Embedding models.
+## 📂 Project Structure
+```text
+├── src/
+│   ├── api.py            # FastAPI High-performance API
+│   ├── app.py            # Streamlit UI (Legacy)
+│   ├── graph_engine.py   # Lightweight Entity Extraction Engine
+│   ├── retrieval_engine.py # Hybrid Retrieval & HyDE Logic
+│   ├── rag_chain.py      # Agentic RAG Core Logic
+│   ├── section.py        # High-fidelity PDF Parsing Engine
+│   └── vectorize.py      # Vectorization & Incremental Archiving
+├── frontend/             # Next.js Modern Frontend
+├── data/                 # Raw PDF storage (auto-filtered)
+├── models/               # Local model weights (m3e-small)
+└── assets/               # Documentation images
+```
 
 ## 📦 Quick Start
 
-### 1. Setup
+### 1. Backend Setup
 ```bash
-# Clone the repository
-git clone https://github.com/Lunaira-Y/Financial-Insight-RAG.git
-cd Financial-Insight-RAG
-
 # Install dependencies
 pip install -r requirements.txt
 
@@ -53,23 +70,28 @@ pip install -r requirements.txt
 ollama pull qwen2:1.5b
 ```
 
-### 2. Run Pipeline
+### 2. Data Processing
 1. Place PDF reports in the `data/` folder.
-2. Run slicing: `python src/section.py`
+2. Run parsing: `python src/section.py`
 3. Run vectorization: `python src/vectorize.py`
 
-### 3. Launch App
-```bash
-streamlit run src/app.py
-```
+### 3. Start Services
+- **Backend API**: `python src/api.py` (Runs on port 8000)
+- **Frontend**:
+  ```bash
+  cd frontend
+  npm install
+  npm run dev
+  ```
 
-## 📂 Project Structure
-- `src/app.py`: Web interface (includes bilingual routing and metadata filtering).
-- `src/rag_chain.py`: CLI version for interactive testing.
-- `src/section.py`: High-fidelity PDF parsing and slicing engine.
-- `src/vectorize.py`: Vector storage and automatic archiving process.
+## 🤝 Acknowledgments
+This project is inspired by the open-source community. Special thanks to:
+- **LangChain & Ollama**: For providing the foundation for RAG and local LLM deployment.
+- **Moka AI**: For open-sourcing the excellent `m3e` Chinese embedding model.
+- **Qwen Team (Alibaba)**: For the impressive Qwen2 series models that excel on edge devices.
+- **ChromaDB**: For a simple yet efficient vector storage solution.
+- **FlashRank**: For providing technical inspiration during the reranking phase.
 
 ---
 **Developer**: Lunaira  
-**Acknowledgments**:
-Thanks to the LangChain, Ollama, and Streamlit communities for providing excellent open-source application frameworks. Special thanks to Moka AI for open-sourcing the m3e Chinese embedding model, as well as Chroma and PDFPlumber for their powerful technical support in underlying data processing and vector storage.
+**License**: MIT License
