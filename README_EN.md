@@ -12,10 +12,12 @@
 [![LLM](https://img.shields.io/badge/Local_LLM-Qwen2--1.5B-purple.svg)](https://ollama.com/)
 [![Frontend](https://img.shields.io/badge/Frontend-Next.js_14-black.svg)](https://nextjs.org/)
 
+<p align="center">
+  <img src="assets/demo.png" alt="System Demo" width="800">
+</p>
+
 ## 📝 Introduction
 **Financial-Insight-RAG** is a professional-grade Q&A system designed specifically for complex financial reports (e.g., Annual Reports). Built upon a traditional RAG architecture, this project integrates an **Agentic Thinking Chain**, **Lightweight Knowledge Graph Enhancement**, and **HyDE (Hypothetical Document Embeddings)**. It excels at handling data calculations, entity relationships, and cross-lingual retrieval tasks within financial contexts.
-
-![System Demo](assets/demo.png)
 
 ## 🚀 Key Optimized Features
 

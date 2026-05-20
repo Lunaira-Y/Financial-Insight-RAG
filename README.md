@@ -12,10 +12,12 @@
 [![LLM](https://img.shields.io/badge/Local_LLM-Qwen2--1.5B-purple.svg)](https://ollama.com/)
 [![Frontend](https://img.shields.io/badge/Frontend-Next.js_14-black.svg)](https://nextjs.org/)
 
+<p align="center">
+  <img src="assets/demo.png" alt="系统演示界面" width="800">
+</p>
+
 ## 📝 项目简介
 **Financial-Insight-RAG** 是一个专为复杂财务报表（如年度报告）设计的专业级问答系统。本项目在传统 RAG 架构的基础上，引入了 **Agentic 思考链路**、**轻量级知识图谱增强**以及 **HyDE 假设性文档增强**，能够精准处理财报中的数据计算、实体关联以及跨语言检索任务。
-
-![系统演示界面](assets/demo.png)
 
 ## 🚀 核心优化特性
 
